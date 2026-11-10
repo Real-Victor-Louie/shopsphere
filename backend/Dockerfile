@@ -6,6 +6,13 @@ FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
+
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+    
 COPY package.json package-lock.json ./
 
 RUN npm ci
@@ -34,7 +41,14 @@ ENV NODE_ENV=production
 ENV PORT=5000
 
 # Install production dependencies
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+
 COPY package.json package-lock.json ./
+
 
 RUN npm ci --omit=dev \
     && npm cache clean --force
